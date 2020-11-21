@@ -88,7 +88,7 @@ bool isRowFilled(size_t rownum, const std::vector<Move> & moves) {
 bool isColumnFilled(size_t colnum, const std::vector<Move> & moves) {
   std::vector<Move> column_items;
   for (const Move & cell : moves) {
-    if (cell.row == colnum) {
+    if (cell.column == colnum) {
       column_items.push_back(cell);
     }
   }
@@ -135,6 +135,16 @@ bool isWinnerA(const std::vector<Move> & all_moves) {
 //------------------------------------------------------------------------------
 bool isWinnerB(const std::vector<Move> & all_moves) {
   return isWinner(getEvenMoves(all_moves));
+}
+
+//------------------------------------------------------------------------------
+std::vector<Move> ReadMovesFromVectorOfIntegers(const std::vector<std::vector<int>> & coordinates) {
+  std::vector<Move> moves;
+  for (const std::vector<int> & xy : coordinates ) {
+    moves.push_back(Move(xy.at(0), xy.at(1)));
+  }
+
+  return moves;
 }
 
 //------------------------------------------------------------------------------
