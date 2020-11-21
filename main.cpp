@@ -74,26 +74,26 @@ std::vector<Move> getEvenMoves(const std::vector<Move> & moves) {
 
 //------------------------------------------------------------------------------
 bool isRowFilled(size_t rownum, const std::vector<Move> & moves) {
-  std::vector<Move> row_items;
+  size_t row_items_count = 0;
   for (const Move & cell : moves) {
     if (cell.row == rownum) {
-      row_items.push_back(cell);
+      ++row_items_count;
     }
   }
 
-  return row_items.size() == ROWLENGTH;
+  return row_items_count == ROWLENGTH;
 }
 
 //------------------------------------------------------------------------------
 bool isColumnFilled(size_t colnum, const std::vector<Move> & moves) {
-  std::vector<Move> column_items;
+  size_t column_items_count = 0;
   for (const Move & cell : moves) {
     if (cell.column == colnum) {
-      column_items.push_back(cell);
+      ++column_items_count;
     }
   }
 
-  return column_items.size() == COLUMNLENGTH;
+  return column_items_count == COLUMNLENGTH;
 }
 
 //------------------------------------------------------------------------------
