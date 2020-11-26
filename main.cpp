@@ -9,36 +9,20 @@ enum class Player {
   A, B
 };
 
-struct Move {
-  Move(size_t row, size_t column)
-    : row(row),
-      column(column)
-  {}
-
-  size_t row = 0;
-  size_t column = 0;
-};
-
 //------------------------------------------------------------------------------
-bool operator ==(const Move & lhs, const Move rhs) {
-  return lhs.row == rhs.row
-      && lhs.column == rhs.column;
-}
-
-//------------------------------------------------------------------------------
-std::istream & ReadMove(std::istream & is, Move & move) {
+std::istream & ReadMove(std::istream & is, std::vector<int> & move) {
   char bracket, comma;
-  is >> bracket >> move.row >> comma >> move.column >> bracket;
+  is >> bracket >> move[0] >> comma >> move[1] >> bracket;
 
   return is;
 }
 
 //------------------------------------------------------------------------------
-std::istream & ReadAllMoves(std::istream & is, std::vector<Move> & moves) {
+std::istream & ReadAllMoves(std::istream & is, std::vector<std::vector<int>> & moves) {
   char bracket, comma;
   std::cin >> bracket;
   do {
-    Move move(0,0);
+    std::vector<int> move = {0,0};
     ReadMove(std::cin, move);
     // FIXME Use emplace to avoid copying
     moves.push_back(move);
@@ -59,12 +43,12 @@ bool isPlayerMove(Player player, size_t move_idx) {
 }
 
 //------------------------------------------------------------------------------
-bool isRowFilled(size_t rownum, const std::vector<Move> & moves,
+bool isRowFilled(size_t rownum, const std::vector<std::vector<int>> & moves,
                  Player player) {
   size_t row_items_count = 0;
   for (size_t i = 0; i < moves.size(); ++i) {
     if ( isPlayerMove(player, i)
-         && moves.at(i).row == rownum ) {
+         && moves.at(i).at(0) == rownum ) {
         ++row_items_count;
     }
   }
@@ -73,12 +57,12 @@ bool isRowFilled(size_t rownum, const std::vector<Move> & moves,
 }
 
 //------------------------------------------------------------------------------
-bool isColumnFilled(size_t colnum, const std::vector<Move> & moves,
+bool isColumnFilled(size_t colnum, const std::vector<std::vector<int>> & moves,
                     Player player) {
   size_t column_items_count = 0;
   for (size_t i = 0; i < moves.size(); ++i) {
     if (isPlayerMove(player, i)
-        && moves.at(i).column == colnum) {
+        && moves.at(i).at(1) == colnum) {
       ++column_items_count;
     }
   }
@@ -87,14 +71,17 @@ bool isColumnFilled(size_t colnum, const std::vector<Move> & moves,
 }
 
 //------------------------------------------------------------------------------
-bool isTopLeftDiagonalFilled(const std::vector<Move> & moves, Player player) {
+bool isTopLeftDiagonalFilled(const std::vector<std::vector<int>> & moves, Player player) {
   size_t diag_cells_filled = 0;
   for (size_t i = 0; i < moves.size(); ++i) {
     if (isPlayerMove(player, i)) {
-      const Move & cell = moves.at(i);
-      if ( cell == Move(0,0)
-           || cell == Move(1,1)
-           || cell == Move(2,2)) {
+      const std::vector<int> & cell = moves.at(i);
+      const std::vector<int> cell00 = {0,0};
+      const std::vector<int> cell11 = {1,1};
+      const std::vector<int> cell22 = {2,2};
+      if ( cell == cell00
+           || cell == cell11
+           || cell == cell22) {
         ++diag_cells_filled;
       }
     }
@@ -104,14 +91,17 @@ bool isTopLeftDiagonalFilled(const std::vector<Move> & moves, Player player) {
 }
 
 //------------------------------------------------------------------------------
-bool isBottomLeftDiagonalFilled(const std::vector<Move> & moves, Player player) {
+bool isBottomLeftDiagonalFilled(const std::vector<std::vector<int>> & moves, Player player) {
   size_t diag_cells_filled = 0;
   for (size_t i = 0; i < moves.size(); ++i) {
     if (isPlayerMove(player, i)) {
-      const Move & cell = moves.at(i);
-      if ( cell == Move(2,0)
-           || cell == Move(1,1)
-           || cell == Move(0,2) ) {
+      const std::vector<int> & cell = moves.at(i);
+      const std::vector<int> cell20 = {2,0};
+      const std::vector<int> cell11 = {1,1};
+      const std::vector<int> cell02 = {0,2};
+      if ( cell == cell20
+           || cell == cell11
+           || cell == cell02 ) {
         ++diag_cells_filled;
       }
     }
@@ -120,12 +110,12 @@ bool isBottomLeftDiagonalFilled(const std::vector<Move> & moves, Player player) 
 }
 
 //------------------------------------------------------------------------------
-bool allBoardFilled(const std::vector<Move> & moves) {
+bool allBoardFilled(const std::vector<std::vector<int>> & moves) {
   return moves.size() == ROWLENGTH * COLUMNLENGTH;
 }
 
 //------------------------------------------------------------------------------
-bool isWinner(const std::vector<Move> & moves, Player player) {
+bool isWinner(const std::vector<std::vector<int>> & moves, Player player) {
   return isRowFilled(0, moves, player)
       || isRowFilled(1, moves, player)
       || isRowFilled(2, moves, player)
@@ -137,27 +127,27 @@ bool isWinner(const std::vector<Move> & moves, Player player) {
 }
 
 //------------------------------------------------------------------------------
-bool isWinnerA(const std::vector<Move> & all_moves) {
+bool isWinnerA(const std::vector<std::vector<int>> & all_moves) {
   return isWinner(all_moves, Player::A);
 }
 
 //------------------------------------------------------------------------------
-bool isWinnerB(const std::vector<Move> & all_moves) {
+bool isWinnerB(const std::vector<std::vector<int>> & all_moves) {
   return isWinner(all_moves, Player::B);
 }
 
 //------------------------------------------------------------------------------
-std::vector<Move> ReadMovesFromVectorOfIntegers(const std::vector<std::vector<int>> & coordinates) {
-  std::vector<Move> moves;
+std::vector<std::vector<int>> ReadMovesFromVectorOfIntegers(const std::vector<std::vector<int>> & coordinates) {
+  std::vector<std::vector<int>> moves;
   for (const std::vector<int> & xy : coordinates ) {
-    moves.push_back(Move(xy.at(0), xy.at(1)));
+    moves.push_back(std::vector<int>(xy.at(0), xy.at(1)));
   }
 
   return moves;
 }
 
 //------------------------------------------------------------------------------
-std::string checkBoard(const std::vector<Move> & all_moves) {
+std::string checkBoard(const std::vector<std::vector<int>> & all_moves) {
   std::string answer;
 
   if (isWinnerA(all_moves)) {
@@ -175,7 +165,7 @@ std::string checkBoard(const std::vector<Move> & all_moves) {
 
 //------------------------------------------------------------------------------
 int main() {
-  std::vector<Move> moves;
+  std::vector<std::vector<int>> moves;
   ReadAllMoves(std::cin, moves);
 //  std::clog << moves.size() << " moves were made" << std::endl;
   std::cout << checkBoard(moves) << std::endl;
